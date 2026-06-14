@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Truck, Users } from '@lucide/vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { LayoutGrid, Truck, Users, ShoppingCart, Clock } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -17,23 +18,48 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Heavy Equipments',
-        href: '/heavy-equipments',
-        icon: Truck,
-    },
-    {
-        title: 'Customers',
-        href: '/customers',
-        icon: Users,
-    },
-];
+const page = usePage();
+const auth = computed(() => page.props.auth as { user?: { role?: string } } | undefined);
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Heavy Equipments',
+            href: '/heavy-equipments',
+            icon: Truck,
+        },
+        {
+            title: 'Customers',
+            href: '/customers',
+            icon: Users,
+        },
+        {
+            title: 'New Rental',
+            href: '/rentals/create',
+            icon: ShoppingCart,
+        },
+        {
+            title: 'History',
+            href: '/history',
+            icon: Clock,
+        },
+    ];
+
+    return auth.value?.user?.role === 'administrator'
+        ? items
+        : items.filter((item) => item.title === 'New Rental' || item.title === 'History');
+});
+
+const homeLink = computed(() => {
+    return auth.value?.user?.role === 'administrator'
+        ? dashboard()
+        : '/rentals/create';
+});
 
 const footerNavItems: NavItem[] = [];
 </script>
@@ -44,7 +70,7 @@ const footerNavItems: NavItem[] = [];
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="homeLink">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

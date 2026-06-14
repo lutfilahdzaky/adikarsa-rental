@@ -11,7 +11,7 @@ class HeavyEquipmentController extends Controller
     public function index()
     {
         return Inertia::render('HeavyEquipments/Index', [
-            'heavyEquipments' => HeavyEquipment::orderBy('name')->get(),
+            'heavyEquipments' => HeavyEquipment::withCount('activeRentals')->orderBy('name')->get(),
         ]);
     }
 
@@ -27,7 +27,6 @@ class HeavyEquipmentController extends Controller
             'description' => 'nullable|string',
             'daily_rate' => 'required|integer|min:0',
             'photo' => 'nullable|string',
-            'status' => 'required|in:available,rented,maintenance,offline',
         ]);
 
         HeavyEquipment::create($validated);
@@ -50,7 +49,6 @@ class HeavyEquipmentController extends Controller
             'description' => 'nullable|string',
             'daily_rate' => 'required|integer|min:0',
             'photo' => 'nullable|string',
-            'status' => 'required|in:available,rented,maintenance,offline',
         ]);
 
         $heavyEquipment->update($validated);

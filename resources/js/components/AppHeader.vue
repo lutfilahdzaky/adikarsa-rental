@@ -46,19 +46,31 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const page = usePage();
-const auth = computed(() => page.props.auth);
+const auth = computed(() => page.props.auth as { user?: { role?: string } } | undefined);
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const activeItemStyles =
     'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    if (auth.value?.user?.role !== 'administrator') {
+        return [];
+    }
+
+    return [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+});
+
+const homeLink = computed(() => {
+    return auth.value?.user?.role === 'administrator'
+        ? dashboard()
+        : '/rentals/create';
+});
 
 const rightNavItems: NavItem[] = [];
 </script>
@@ -132,7 +144,7 @@ const rightNavItems: NavItem[] = [];
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2">
+                <Link :href="homeLink" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 

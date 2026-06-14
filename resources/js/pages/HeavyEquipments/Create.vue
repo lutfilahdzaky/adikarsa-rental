@@ -3,22 +3,12 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { router } from '@inertiajs/vue3';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 const form = ref({
     name: '',
     description: '',
     daily_rate: 0,
     photo: '',
-    status: 'available',
 });
 
 const errors = ref<Record<string, string>>({});
@@ -117,24 +107,6 @@ defineOptions({
                     <p v-if="errors.photo" class="mt-1 text-sm text-destructive">{{ errors.photo }}</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-foreground">Status *</label>
-                    <Select v-model="form.status" class="mt-2 w-full">
-                        <SelectTrigger class="w-full">
-                            <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectLabel>Status</SelectLabel>
-                                <SelectItem value="available">Available</SelectItem>
-                                <SelectItem value="rented">Rented</SelectItem>
-                                <SelectItem value="maintenance">Maintenance</SelectItem>
-                                <SelectItem value="offline">Offline</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <p v-if="errors.status" class="mt-1 text-sm text-destructive">{{ errors.status }}</p>
-                </div>
 
                 <div class="flex gap-3 pt-4">
                     <button

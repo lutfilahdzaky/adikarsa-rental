@@ -182,7 +182,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Heavy equipments',
+                title: 'Heavy Equipments',
                 href: '/heavy-equipments',
             },
         ],
@@ -191,13 +191,13 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Heavy equipments" />
+    <Head title="Heavy Equipments" />
 
     <div class="flex flex-col gap-6 px-6 py-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <Heading
                 variant="small"
-                title="Heavy equipments"
+                title="Heavy Equipments"
                 description="Manage and organize your rental equipment inventory."
             />
 

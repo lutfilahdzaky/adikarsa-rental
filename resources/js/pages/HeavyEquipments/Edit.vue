@@ -10,7 +10,6 @@ interface HeavyEquipment {
     description: string | null;
     daily_rate: number;
     photo: string | null;
-    status: string;
 }
 
 interface Props {
@@ -24,7 +23,6 @@ const form = ref({
     description: props.heavyEquipment.description ?? '',
     daily_rate: props.heavyEquipment.daily_rate ?? 0,
     photo: props.heavyEquipment.photo ?? '',
-    status: props.heavyEquipment.status,
 });
 
 const errors = ref<Record<string, string>>({});
@@ -129,21 +127,6 @@ defineOptions({
                     <p v-if="errors.photo" class="mt-1 text-sm text-destructive">{{ errors.photo }}</p>
                 </div>
 
-                <div>
-                    <label for="status" class="block text-sm font-medium text-foreground">Status *</label>
-                    <select
-                        id="status"
-                        v-model="form.status"
-                        required
-                        class="mt-2 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                        <option value="available">Available</option>
-                        <option value="rented">Rented</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="offline">Offline</option>
-                    </select>
-                    <p v-if="errors.status" class="mt-1 text-sm text-destructive">{{ errors.status }}</p>
-                </div>
 
                 <div class="flex gap-3 pt-4">
                     <button
