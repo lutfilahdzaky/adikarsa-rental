@@ -10,7 +10,7 @@ class HeavyEquipmentController extends Controller
 {
     public function index()
     {
-        return Inertia::render('HeavyEquipments', [
+        return Inertia::render('HeavyEquipments/Index', [
             'heavyEquipments' => HeavyEquipment::orderBy('name')->get(),
         ]);
     }

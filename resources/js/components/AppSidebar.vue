@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, Truck } from '@lucide/vue';
+import { LayoutGrid, Truck, Users } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -24,9 +24,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Heavy equipments',
+        title: 'Heavy Equipments',
         href: '/heavy-equipments',
         icon: Truck,
+    },
+    {
+        title: 'Customers',
+        href: '/customers',
+        icon: Users,
     },
 ];
 

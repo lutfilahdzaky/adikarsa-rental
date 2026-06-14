@@ -55,7 +55,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Heavy equipments',
+                title: 'Heavy Equipments',
                 href: '/heavy-equipments',
             },
             {

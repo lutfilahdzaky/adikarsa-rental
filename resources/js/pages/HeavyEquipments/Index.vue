@@ -170,7 +170,7 @@ const table = useVueTable({
 const handleDelete = (id: number) => {
     if (!confirm('Are you sure you want to delete this equipment?')) return
 
-    router.post(`/heavy-equipments/${id}`, { _method: 'DELETE' }, {
+    router.delete(`/heavy-equipments/${id}`, {
         onSuccess: () => {
             // refresh index data so table updates without full browser reload
             router.get('/heavy-equipments')
