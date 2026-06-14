@@ -18,6 +18,8 @@ trait ProfileValidationRules
         return [
             'name' => $this->nameRules(),
             'email' => $this->emailRules($userId),
+            'phone' => $this->phoneRules(),
+            'address' => $this->addressRules(),
         ];
     }
 
@@ -47,5 +49,31 @@ trait ProfileValidationRules
                 ? Rule::unique(User::class)
                 : Rule::unique(User::class)->ignore($userId),
         ];
+    }
+
+    /**
+     * Get the validation rules used to validate user phone numbers.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function phoneRules(): array
+    {
+        return [
+            'required',
+            'string',
+            'min:9',
+            'max:20',
+            'regex:/^[0-9+][0-9+\-\s()]*$/',
+        ];
+    }
+
+    /**
+     * Get the validation rules used to validate user addresses.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function addressRules(): array
+    {
+        return ['required', 'string', 'min:10', 'max:1000'];
     }
 }
