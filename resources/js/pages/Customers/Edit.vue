@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
-import { router } from '@inertiajs/vue3';
 
 interface Customer {
     id: number;
@@ -31,7 +30,19 @@ const handleSubmit = async () => {
     errors.value = {};
 
         try {
-            router.put(`/customers/${props.customer.id}`, form.value, {
+            const formData = new FormData()
+            formData.append('name', form.value.name)
+            formData.append('email', form.value.email)
+            formData.append('phone', form.value.phone)
+            formData.append('address', form.value.address)
+            if (form.value.password) {
+                formData.append('password', form.value.password)
+                formData.append('password_confirmation', form.value.password_confirmation)
+            }
+
+            formData.append('_method', 'PUT')
+
+            await router.post(`/customers/${props.customer.id}`, formData, {
                 onError: (pageErrors) => {
                     errors.value = pageErrors;
                 },
@@ -90,6 +101,7 @@ defineOptions({
                 </div>
 
                 <div>
+
                     <label class="block text-sm font-medium">New Password (leave blank to keep current)</label>
                     <input v-model="form.password" type="password" class="mt-2 block w-full rounded-lg border border-input px-3 py-2" />
                     <p v-if="errors.password" class="mt-1 text-sm text-destructive">{{ errors.password }}</p>

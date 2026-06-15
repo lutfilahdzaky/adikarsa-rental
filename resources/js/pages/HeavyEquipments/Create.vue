@@ -8,8 +8,10 @@ const form = ref({
     name: '',
     description: '',
     daily_rate: 0,
-    photo: '',
+    photo: null as File | null,
 });
+
+const photoPreview = ref<string | null>(null)
 
 const errors = ref<Record<string, string>>({});
 const isSubmitting = ref(false);
@@ -19,15 +21,37 @@ const handleSubmit = async () => {
     errors.value = {};
 
     try {
-        router.post('/heavy-equipments', form.value, {
+        const formData = new FormData()
+        formData.append('name', form.value.name)
+        formData.append('description', form.value.description)
+        formData.append('daily_rate', String(form.value.daily_rate))
+
+        if (form.value.photo) {
+            formData.append('photo', form.value.photo)
+        }
+
+        await router.post('/heavy-equipments', formData, {
             onError: (pageErrors) => {
                 errors.value = pageErrors;
             },
-        });
+        })
     } finally {
         isSubmitting.value = false;
     }
 };
+
+const handlePhotoChange = (event: Event) => {
+    const target = event.target as HTMLInputElement | null
+    const file = target?.files?.[0] ?? null
+
+    form.value.photo = file
+
+    if (file) {
+        photoPreview.value = URL.createObjectURL(file)
+    } else {
+        photoPreview.value = null
+    }
+}
 
 defineOptions({
     layout: {
@@ -96,15 +120,20 @@ defineOptions({
                 </div>
 
                 <div>
-                    <label for="photo" class="block text-sm font-medium text-foreground">Photo URL</label>
+                    <label for="photo" class="block text-sm font-medium text-foreground">Photo</label>
                     <input
                         id="photo"
-                        v-model="form.photo"
-                        type="url"
+                        type="file"
+                        accept="image/*"
+                        @change="handlePhotoChange"
                         class="mt-2 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
-                        placeholder="https://example.com/photo.jpg"
                     />
                     <p v-if="errors.photo" class="mt-1 text-sm text-destructive">{{ errors.photo }}</p>
+
+                    <div v-if="photoPreview" class="mt-3">
+                        <p class="text-xs text-muted-foreground mb-1">Preview:</p>
+                        <img :src="photoPreview" alt="preview" class="h-28 w-40 rounded object-cover border" />
+                    </div>
                 </div>
 
 

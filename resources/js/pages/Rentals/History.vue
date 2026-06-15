@@ -86,6 +86,23 @@ const formatDate = (dateString: string) => {
   return `${day}-${month}-${year}`
 }
 
+const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case 'Menunggu':
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+    case 'Disetujui':
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+    case 'Sedang Disewa':
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+    case 'Selesai':
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+    case 'Ditolak':
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    default:
+      return 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  }
+}
+
 const columns: ColumnDef<Rental>[] = [
   {
     accessorKey: 'id',
@@ -124,7 +141,7 @@ const columns: ColumnDef<Rental>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }: any) => h('div', { class: 'text-sm' }, row.getValue('status')),
+    cell: ({ row }: any) => h('div', { class: getStatusBadgeVariant(row.getValue('status')) }, row.getValue('status')),
   },
 
   {
@@ -189,6 +206,56 @@ const table = useVueTable({
     },
   },
 })
+
+const exportToCsv = () => {
+  const rows = data.value as Rental[]
+
+  if (!rows || !rows.length) {
+    alert('No rentals to export.')
+    return
+  }
+
+  const includeCustomer = isAdmin.value === true
+  const baseHeaders = ['id']
+  if (includeCustomer) {
+    baseHeaders.push('customer_name', 'customer_email')
+  }
+  baseHeaders.push('start_date', 'end_date', 'total_price', 'status', 'equipments')
+
+  const csvRows = [baseHeaders.join(',')]
+
+  for (const r of rows) {
+    const equipmentNames = (r.rental_details || []).map((d) => d.heavy_equipment?.name ?? '').join('; ')
+    const values: any[] = [r.id]
+
+    if (includeCustomer) {
+      values.push(r.user?.name ?? '', r.user?.email ?? '')
+    }
+
+    values.push(r.start_date ?? '', r.end_date ?? '', r.total_price ?? '', r.status ?? '', equipmentNames)
+
+    const line = values
+      .map((v) => {
+        if (v === null || typeof v === 'undefined') return '""'
+        const s = String(v).replace(/"/g, '""')
+        return `"${s}"`
+      })
+      .join(',')
+
+    csvRows.push(line)
+  }
+
+  const csv = csvRows.join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `rentals_history_${new Date().toISOString().slice(0, 10)}.csv`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
 
 defineOptions({
   layout: {
@@ -255,9 +322,15 @@ defineOptions({
       </Table>
     </div>
 
-    <div class="flex items-center justify-end space-x-2">
-      <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">Previous</Button>
-      <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
+    <div class="flex items-center justify-between">
+      <div>
+        <Button variant="outline" size="sm" @click="exportToCsv()">Export CSV</Button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">Previous</Button>
+        <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
+      </div>
     </div>
   </div>
 </template>

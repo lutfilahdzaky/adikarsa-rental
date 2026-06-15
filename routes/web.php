@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HeavyEquipmentController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\RentalController;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::middleware(['auth', 'verified', AdminOnly::class])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('heavy-equipments', HeavyEquipmentController::class)->except(['show']);
     Route::resource('customers', CustomerController::class)->except(['show']);
 });

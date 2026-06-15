@@ -64,19 +64,19 @@ const steps = [
   {
     step: 1,
     title: 'Equipment',
-    description: 'Pilih peralatan dan masukkan ke keranjang',
+    description: 'Select equipment and add to cart',
     icon: Truck,
   },
   {
     step: 2,
     title: 'Rental',
-    description: 'Pilih tanggal dan pemesan',
+    description: 'Choose dates and customer',
     icon: CalendarDays,
   },
   {
     step: 3,
     title: 'Payment',
-    description: 'Unggah bukti pembayaran',
+    description: 'Upload payment proof',
     icon: CreditCard,
   },
 ]
@@ -278,7 +278,7 @@ defineOptions({
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p class="text-sm font-medium text-foreground">Available Equipment</p>
-                  <p class="text-sm text-muted-foreground">Pilih peralatan yang dapat dipesan.</p>
+                  <p class="text-sm text-muted-foreground">Choose available equipment to book.</p>
                 </div>
                 <Input
                   v-model="searchQuery"
@@ -312,7 +312,7 @@ defineOptions({
                               />
                               <div>
                                 <span class="font-medium">{{ equipment.name }}</span>
-                                <p class="text-sm text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }} / hari</p>
+                                <p class="text-sm text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }} / day</p>
                               </div>
                             </div>
                             <span class="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">{{ equipment.status }}</span>
@@ -334,7 +334,7 @@ defineOptions({
                       </div>
                     </template>
                     <div v-else class="sm:col-span-2 rounded-lg border border-input p-6 text-center text-sm text-muted-foreground">
-                      Tidak ada equipment yang cocok dengan pencarian.
+                      No equipment matches your search.
                     </div>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ defineOptions({
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium">Cart</p>
-                  <p class="text-sm text-muted-foreground">{{ selectedEquipments.length }} item dipilih</p>
+                  <p class="text-sm text-muted-foreground">{{ selectedEquipments.length }} items selected</p>
                 </div>
                 <span class="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">{{ selectedEquipments.length }}</span>
               </div>
@@ -364,18 +364,18 @@ defineOptions({
                     />
                     <div>
                       <div class="font-medium">{{ equipment.name }}</div>
-                      <div class="text-sm text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/hari</div>
+                      <div class="text-sm text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/day</div>
                     </div>
                   </div>
                 </div>
                 <div v-if="selectedEquipments.length === 0" class="rounded-lg border border-dashed border-input p-4 text-sm text-muted-foreground">
-                  Keranjang kosong. Tambahkan equipment untuk melanjutkan.
+                  Your cart is empty. Add equipment to continue.
                 </div>
               </div>
 
               <div class="flex justify-end border-t border-input pt-3">
                 <Button type="button" class="min-w-[180px]" :disabled="!canProceedToRental" @click="goNext">
-                  Lanjut ke Rental
+                  Continue to Rental
                 </Button>
               </div>
             </div>
@@ -387,9 +387,8 @@ defineOptions({
             <div class="space-y-6 rounded-xl border border-input bg-background p-4 shadow-sm">
               <div>
                 <p class="text-sm font-medium">Rental Dates</p>
-                <p class="text-sm text-muted-foreground">Pilih tanggal mulai dan selesai.</p>
+                <p class="text-sm text-muted-foreground">Choose a start date and end date.</p>
               </div>
-
               <div class="rounded-md border border-input bg-background p-3">
                 <RangeCalendar
                   v-model:modelValue="dateRange"
@@ -414,23 +413,23 @@ defineOptions({
             </div>
 
             <div class="space-y-4 rounded-xl border border-input bg-background p-4 shadow-sm">
-              <p class="text-sm font-medium">Ringkasan Pilihan</p>
+              <p class="text-sm font-medium">Selection Summary</p>
               <div class="space-y-3">
                 <div v-for="equipment in selectedEquipments" :key="equipment.id" class="rounded-lg border border-input p-3">
                   <div class="flex items-center justify-between gap-3 text-sm">
                     <span>{{ equipment.name }}</span>
-                    <span class="text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/hari</span>
+                    <span class="text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/day</span>
                   </div>
                 </div>
               </div>
 
               <div class="rounded-lg border border-input p-3 text-sm text-muted-foreground">
                 <div class="flex items-center justify-between">
-                  <span>Durasi</span>
-                  <span>{{ rentalDays }} hari</span>
+                  <span>Duration</span>
+                  <span>{{ rentalDays }} days</span>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span>Total Harga</span>
+                  <span>Total Price</span>
                   <span>Rp{{ totalPrice.toLocaleString() }}</span>
                 </div>
               </div>
@@ -442,7 +441,7 @@ defineOptions({
                   v-model.number="form.customer_id"
                   class="mt-2 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring"
                 >
-                  <option value="" disabled>Pilih customer</option>
+                  <option value="" disabled>Select customer</option>
                   <option v-for="customer in props.customers" :key="customer.id" :value="customer.id">
                     {{ customer.name }} - {{ customer.email }}
                   </option>
@@ -454,10 +453,10 @@ defineOptions({
 
           <div class="flex items-center justify-between gap-3">
             <Button type="button" variant="outline" class="min-w-[140px]" @click="goPrevious">
-              Kembali
+              Back
             </Button>
             <Button type="button" class="min-w-[180px]" :disabled="!canProceedToPayment" @click="goNext">
-              Lanjut ke Pembayaran
+              Continue to Payment
             </Button>
           </div>
         </section>
@@ -467,13 +466,13 @@ defineOptions({
             <div class="space-y-6 rounded-xl border border-input bg-background p-4 shadow-sm">
               <div>
                 <p class="text-sm font-medium">Payment</p>
-                <p class="text-sm text-muted-foreground">Unggah bukti pembayaran untuk menyelesaikan pemesanan.</p>
+                <p class="text-sm text-muted-foreground">Upload payment proof to complete the booking.</p>
               </div>
 
               <div class="grid w-full max-w-sm items-center gap-1.5">
-                <Label for="paymentProof">Bukti Pembayaran *</Label>
-                <Input id="paymentProof" type="file" @change="handleProofFileChange" />
-                <p class="text-sm text-muted-foreground">File JPG, PNG, atau PDF maks 10MB.</p>
+                <Label for="paymentProof">Payment Proof *</Label>
+                <Input id="paymentProof" type="file" @change="handleProofFileChange" class="payment-file-input" />
+                <p class="text-sm text-muted-foreground">JPG, PNG, or PDF up to 10MB.</p>
                 <p v-if="errors.payment_proof" class="mt-1 text-sm text-destructive">{{ errors.payment_proof }}</p>
               </div>
             </div>
@@ -483,15 +482,15 @@ defineOptions({
               <div class="space-y-3">
                 <div v-for="equipment in selectedEquipments" :key="equipment.id" class="flex items-center justify-between rounded-lg border border-input p-3 text-sm">
                   <span>{{ equipment.name }}</span>
-                  <span class="text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/hari</span>
+                  <span class="text-muted-foreground">Rp{{ equipment.daily_rate.toLocaleString() }}/day</span>
                 </div>
               </div>
 
               <div class="rounded-lg border border-input p-3 text-sm text-muted-foreground">
                 <div class="flex items-center justify-between">
-                  <span>Tanggal</span>
+                  <span>Date</span>
                     <span>{{ formatDate(dateRange?.start?.toString() ?? '') }} - {{ formatDate(dateRange?.end?.toString() ?? '') }}</span>
-                  <span>{{ rentalDays }} hari</span>
+                  <span>{{ rentalDays }} days</span>
                 </div>
                 <div class="flex items-center justify-between font-semibold text-foreground mt-2">
                   <span>Total</span>
@@ -500,9 +499,9 @@ defineOptions({
               </div>
 
               <div v-if="props.isAdmin" class="rounded-lg border border-input p-3 text-sm text-muted-foreground">
-                <div class="font-medium">Pemesan</div>
+                <div class="font-medium">Customer</div>
                 <div class="mt-2">
-                  {{ props.customers.find((customer) => customer.id === form.customer_id)?.name ?? 'Belum dipilih' }}
+                  {{ props.customers.find((customer) => customer.id === form.customer_id)?.name ?? 'Not selected' }}
                 </div>
               </div>
             </div>
@@ -510,10 +509,10 @@ defineOptions({
 
           <div class="flex items-center justify-between gap-3">
             <Button type="button" variant="outline" class="min-w-[140px]" @click="goPrevious">
-              Kembali
+              Back
             </Button>
             <Button type="button" class="min-w-[180px]" :disabled="!canSubmit || isSubmitting" @click="handleSubmit">
-              {{ isSubmitting ? 'Mengirim...' : 'Kirim Permintaan' }}
+              {{ isSubmitting ? 'Submitting...' : 'Submit Request' }}
             </Button>
           </div>
         </section>
@@ -521,3 +520,19 @@ defineOptions({
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Improve spacing between file selector button and filename */
+.payment-file-input::file-selector-button {
+  margin-right: 0.6rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.375rem;
+}
+
+/* WebKit fallback */
+.payment-file-input::-webkit-file-upload-button {
+  margin-right: 0.6rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.375rem;
+}
+</style>

@@ -21,38 +21,64 @@ import type { NavItem } from '@/types';
 const page = usePage();
 const auth = computed(() => page.props.auth as { user?: { role?: string } } | undefined);
 
-const mainNavItems = computed<NavItem[]>(() => {
-    const items: NavItem[] = [
+const mainNavItems = computed<any[]>(() => {
+    const adminItems = [
         {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
+            label: 'Management',
+            items: [
+                {
+                    title: 'Dashboard',
+                    href: dashboard(),
+                    icon: LayoutGrid,
+                },
+                {
+                    title: 'Heavy Equipments',
+                    href: '/heavy-equipments',
+                    icon: Truck,
+                },
+                {
+                    title: 'Customers',
+                    href: '/customers',
+                    icon: Users,
+                },
+            ],
         },
         {
-            title: 'Heavy Equipments',
-            href: '/heavy-equipments',
-            icon: Truck,
-        },
-        {
-            title: 'Customers',
-            href: '/customers',
-            icon: Users,
-        },
-        {
-            title: 'New Rental',
-            href: '/rentals/create',
-            icon: ShoppingCart,
-        },
-        {
-            title: 'History',
-            href: '/history',
-            icon: Clock,
+            label: 'Rentals',
+            items: [
+                {
+                    title: 'New Rental',
+                    href: '/rentals/create',
+                    icon: ShoppingCart,
+                },
+                {
+                    title: 'History',
+                    href: '/history',
+                    icon: Clock,
+                },
+            ],
         },
     ];
 
-    return auth.value?.user?.role === 'administrator'
-        ? items
-        : items.filter((item) => item.title === 'New Rental' || item.title === 'History');
+    const customerItems = [
+        {
+            label: 'Rentals',
+            items: [
+                {
+                    title: 'New Rental',
+                    href: '/rentals/create',
+                    icon: ShoppingCart,
+                },
+                {
+                    title: 'History',
+                    href: '/history',
+                    icon: Clock,
+                },
+            ],
+        },
+    ];
+
+    return auth.value?.user?.role === 'administrator' ? adminItems : customerItems;
 });
 
 const homeLink = computed(() => {

@@ -62,12 +62,12 @@ const columns: ColumnDef<HeavyEquipment>[] = [
     {
         accessorKey: 'name',
         header: 'Name',
-        cell: ({ row }: any) => h('div', { class: 'font-medium min-w-[200px]' }, row.getValue('name')),
+        cell: ({ row }: any) => h('div', { class: 'font-medium truncate' }, row.getValue('name')),
     },
     {
         accessorKey: 'description',
         header: 'Description',
-        cell: ({ row }: any) => h('div', { class: 'min-w-[200px]' }, row.getValue('description') ?? '-'),
+        cell: ({ row }: any) => h('div', { class: 'max-w-xs truncate' }, row.getValue('description') ?? '-'),
     },
     {
         accessorKey: 'daily_rate',
@@ -77,7 +77,7 @@ const columns: ColumnDef<HeavyEquipment>[] = [
 
             const formatted = 'Rp' + amount.toLocaleString();
 
-            return h('div', { class: 'text-left font-medium min-w-[200px]' }, formatted);
+            return h('div', { class: 'text-left font-medium' }, formatted);
         },
     },
     {
@@ -87,12 +87,12 @@ const columns: ColumnDef<HeavyEquipment>[] = [
             const url = row.getValue('photo')
 
             if (url) {
-                return h('div', { class: 'min-w-[180px] flex items-center' }, [
+                return h('div', { class: 'flex items-center' }, [
                     h('img', { src: url, class: 'h-12 w-16 rounded object-cover', alt: 'photo' })
                 ])
             }
 
-            return h('div', { class: 'text-muted-foreground min-w-[180px]' }, 'No photo')
+            return h('div', { class: 'text-muted-foreground' }, 'No photo')
         },
     },
     {
@@ -178,6 +178,40 @@ const handleDelete = (id: number) => {
     })
 }
 
+const exportToCsv = () => {
+    const rows = data.value as HeavyEquipment[];
+
+    if (!rows || !rows.length) {
+        alert('No equipment to export.');
+        return;
+    }
+
+    const headers = ['id', 'name', 'description', 'daily_rate', 'status', 'photo'];
+
+    const csvRows = [headers.join(',')];
+
+    for (const r of rows) {
+        const line = headers.map((h) => {
+            const val = (r as any)[h];
+            if (val === null || typeof val === 'undefined') return '""';
+            const s = String(val).replace(/"/g, '""');
+            return `"${s}"`;
+        }).join(',');
+        csvRows.push(line);
+    }
+
+    const csv = csvRows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `heavy_equipments_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
+
 defineOptions({
     layout: {
         breadcrumbs: [
@@ -254,8 +288,12 @@ defineOptions({
                 </Table>
             </div>
 
-            <div class="flex items-center justify-end space-x-2">
-                <div class="space-x-2">
+            <div class="flex items-center justify-between">
+                <div>
+                    <Button variant="outline" size="sm" @click="exportToCsv()">Export CSV</Button>
+                </div>
+
+                <div class="flex items-center space-x-2">
                     <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">Previous</Button>
                     <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
                 </div>

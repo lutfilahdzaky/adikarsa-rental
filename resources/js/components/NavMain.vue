@@ -10,29 +10,42 @@ import {
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import type { NavItem } from '@/types';
 
-defineProps<{
+interface NavGroup {
+    label: string;
     items: NavItem[];
+}
+
+defineProps<{
+    items: NavItem[] | NavGroup[];
 }>();
 
 const { isCurrentOrParentUrl } = useCurrentUrl();
+
+const isNavGroup = (item: any): item is NavGroup => {
+    return 'label' in item && 'items' in item;
+};
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Management</SidebarGroupLabel>
-        <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton
-                    as-child
-                    :is-active="isCurrentOrParentUrl(item.href)"
-                    :tooltip="item.title"
-                >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    </SidebarGroup>
+    <template v-for="item in items" :key="isNavGroup(item) ? item.label : item.title">
+        <SidebarGroup class="px-2 py-0">
+            <SidebarGroupLabel>
+                {{ isNavGroup(item) ? item.label : 'Management' }}
+            </SidebarGroupLabel>
+            <SidebarMenu>
+                <SidebarMenuItem v-for="navItem in isNavGroup(item) ? item.items : [item]" :key="navItem.title">
+                    <SidebarMenuButton
+                        as-child
+                        :is-active="isCurrentOrParentUrl(navItem.href)"
+                        :tooltip="navItem.title"
+                    >
+                        <Link :href="navItem.href">
+                            <component :is="navItem.icon" />
+                            <span>{{ navItem.title }}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarGroup>
+    </template>
 </template>

@@ -21,15 +21,24 @@ const handleSubmit = async () => {
     errors.value = {};
 
     try {
-        router.post('/customers', form.value, {
+        const formData = new FormData()
+        formData.append('name', form.value.name)
+        formData.append('email', form.value.email)
+        formData.append('phone', form.value.phone)
+        formData.append('address', form.value.address)
+        formData.append('password', form.value.password)
+        formData.append('password_confirmation', form.value.password_confirmation)
+
+        await router.post('/customers', formData, {
             onError: (pageErrors) => {
                 errors.value = pageErrors;
             },
-        });
+        })
     } finally {
         isSubmitting.value = false;
     }
 };
+
 
 defineOptions({
     layout: {

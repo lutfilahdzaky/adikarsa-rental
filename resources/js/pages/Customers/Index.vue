@@ -41,6 +41,7 @@ export interface Customer {
     name: string
     email: string
     phone?: string | null
+    address?: string | null
     role: string
 }
 
@@ -60,6 +61,7 @@ const columns: ColumnDef<Customer>[] = [
     },
     { accessorKey: 'email', header: 'Email', cell: ({ row }: any) => row.getValue('email') },
     { accessorKey: 'phone', header: 'Phone', cell: ({ row }: any) => row.getValue('phone') ?? '-' },
+    { accessorKey: 'address', header: 'Address', cell: ({ row }: any) => h('div', { class: 'max-w-xs truncate' }, row.getValue('address') ?? '-') },
     {
         id: 'actions',
         enableHiding: false,
@@ -119,6 +121,40 @@ const table = useVueTable({
         },
     },
 })
+
+const exportToCsv = () => {
+    const rows = data.value as any[];
+
+    if (!rows || !rows.length) {
+        alert('No customers to export.');
+        return;
+    }
+
+    const headers = ['id', 'name', 'email', 'phone', 'address', 'role'];
+
+    const csvRows = [headers.join(',')];
+
+    for (const r of rows) {
+        const line = headers.map((h) => {
+            const val = (r as any)[h];
+            if (val === null || typeof val === 'undefined') return '""';
+            const s = String(val).replace(/"/g, '""');
+            return `"${s}"`;
+        }).join(',');
+        csvRows.push(line);
+    }
+
+    const csv = csvRows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customers_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
 
 defineOptions({
     layout: {
@@ -189,8 +225,12 @@ defineOptions({
             </Table>
         </div>
         
-        <div class="flex items-center justify-end space-x-2">
-            <div class="space-x-2">
+        <div class="flex items-center justify-between">
+            <div>
+                <Button variant="outline" size="sm" @click="exportToCsv()">Export CSV</Button>
+            </div>
+
+            <div class="flex items-center space-x-2">
                 <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">Previous</Button>
                 <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
             </div>
